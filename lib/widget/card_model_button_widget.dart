@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 
 class ModelButton extends StatelessWidget {
-  ModelButton({Key? key}) : super(key: key);
+  ModelButton({
+    Key? key,
+    required this.addTask,
+  }) : super(key: key);
 
-  String textValue = ''; // State variable to store the text input
+  final Function addTask;
+
   TextEditingController controller = TextEditingController();
-  void _addTask() {
-    print(controller.text); // Print the current value of textValue
+  void _handleOnclick(BuildContext context) {
+    final name = controller.text;
+    if (name.isEmpty) {
+      return;
+    }
+    addTask(name); // Print the current value of textValue
+
+    Navigator.pop(context);
   }
 
   @override
@@ -31,7 +41,8 @@ class ModelButton extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: _addTask, // Call _addTask when button is pressed
+                onPressed: () => _handleOnclick(
+                    context), // Call _addTask when button is pressed
                 child: const Text('Add Task'),
               ),
             ),

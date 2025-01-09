@@ -7,14 +7,29 @@ void main(List<String> args) {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({Key? key}) : super(key: key);
-  final List<DataItems> items = [
-    DataItems(id: "1", name: "Task 1"),
-    DataItems(id: "2", name: "Task 2"),
-    DataItems(id: "3", name: "Task 3"),
-    DataItems(id: "4", name: "Task 4")
-  ];
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final List<DataItems> items = [];
+
+  void _handleAddTask(String name) {
+    final newItem = DataItems(id: DateTime.now().toString(), name: name);
+    setState(() {
+      items.add(newItem);
+    });
+  }
+
+  void _handleDeleteTask(String id) {
+    setState(() {
+      items.removeWhere((element) => element.id == id);
+    });
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -30,7 +45,12 @@ class MyApp extends StatelessWidget {
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
-            children: items.map((item) => CarBody(item: item)).toList(),
+            children: items
+                .map((item) => CarBody(
+                    index: items.indexOf(item),
+                    item: item,
+                    handleDeleteTask: _handleDeleteTask))
+                .toList(),
           ),
         ),
         floatingActionButton: FloatingActionButton(
@@ -42,9 +62,8 @@ class MyApp extends StatelessWidget {
                       BorderRadius.vertical(top: Radius.circular(20))),
               isScrollControlled: true,
               context: context,
-              builder: (BuildContext context) {
-                return ModelButton();
-              },
+              builder: (BuildContext context) =>
+                  ModelButton(addTask: _handleAddTask),
             );
           },
           child: const Icon(
